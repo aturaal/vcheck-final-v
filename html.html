@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV | Bulk Voucher Checker</title>
+    <div id="deneme22">
+
+<div id="preloader">
+    <img src="./MKA-1881-1938-K.gif" alt="" srcset="" class="benmot">
+</div>
+</div>
+<script>
+
+    const loader = document.getElementById('preloader')
+    const loader2 = document.getElementById('deneme22')
+    setTimeout(() => {
+        loader.style.opacity = 0;
+        loader.style.block = 0;
+        loader.style.display = "none";
+        loader2.style.display = "none";
+    }, 2350);
+</script>
+</head>
+<body>
+
+
+    <div class="center_div">
+
+    <form action="" autocomplete="off" id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="myFiles" style="display:none" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"  multiple />
+        
+                <label for="myFiles" class="label" > <span class="material-symbols-outlined">
+                    upload_file
+                    </span></label>
+                    <button id="butcheck"> <span>Send File</span></button>
+
+        
+    </form>
+
+    <ul id="myList"></ul>
+
+</div>
+
+
+
+    <script>
+
+
+
+//get jwt from localstorage if doesnt exists redirect to login page
+const form = document.getElementById('uploadForm')
+
+
+const sendFiles = async () => {
+   const myFiles = document.getElementById('myFiles').files
+
+   const formData = new FormData()
+
+   Object.keys(myFiles).forEach(key => {
+      formData.append(myFiles.item(key).name, myFiles.item(key))
+   })
+
+   const response = await fetch('http://localhost:3000/upload', {
+      method: 'POST',
+      body: formData
+
+   })
+
+   const json = await response.json()
+
+   console.log(json)
+}
+
+const downloadVouchers = async () => {
+   let array = []
+   await fetch('http://localhost:3000/api/v1/results', {
+         method: 'GET'
+      })
+      .then((resp) => resp.json())
+      .then(async (daa) => {
+         await array.push(daa)
+         console.log(array)
+
+         function saveJSON(array) {
+            console.log(array)
+            const blob = new Blob([JSON.stringify(array, null, 2)], {
+               type: "application/json"
+            });
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "data.json";
+            a.hidden = true;
+            document.body.appendChild(a);
+            a.innerHTML =
+               "someinnerhtml";
+            a.click();
+         }
+
+         await saveJSON(array)
+
+
+      })
+}
+
+const checkVouchers = async (e) => {
+   e.preventDefault()
+   console.log('test')
+   await sendFiles()
+   await downloadVouchers()
+}
+
+form.addEventListener('submit', checkVouchers)
+        
+        
+</script>
+
+    
+        
+
+
+</body>
+</html>
