@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser')
 router.use(cookieParser())
 const path = require('path')
 const jwt = require('jsonwebtoken');
-const database = require('/Users/johnkleiner/Desktop/daaaad/database.js');
+const database = require('../database');
 const env = require('dotenv')
 env.config();
 
