@@ -8,33 +8,30 @@ router.use(bodyParser.json())
 const cookieParser = require('cookie-parser')
 router.use(cookieParser())
 const path = require('path')
-
 const jwt = require('jsonwebtoken');
-const { response } = require('express');
+const SECRET = "twojejmatki"
 
-
-
-
-const getTokenFromHeader = (res) => {
-   console.log(res.body)
-    const authHeader = res.headers['authorization']
-   if(!authHeader) {
-      throw new Error('missing authorization header')
-   }
-    const [, token] = authHeader.split(' ')
-    return token;
-}
 
 
 
 const verifyjwt = function(req , res , next) {
-
-
-        const token = getTokenFromHeader(res)
-const decodedToken = jwt.verify(token, "twojejmatki")
-next();
-}
-
+   if(req.headers.cookie){
+     if(req.headers.cookie.split("=")[1]){
+        const [,token] = req.headers.cookie.split('=')
+        try {
+           const decodedToken = jwt.verify(token, "twojejmatki")
+           next();
+        } catch (error) {
+           res.status(401).json({error: "Unauthorized User!"})
+        } 
+     }else{
+         res.status(401).json({error: "Unauthorized User!"})
+     }
+   }else{
+         res.status(401).json({error: "Unauthorized User!"})
+   }
+   
+ }
 
 const database = knex({
     client: 'postgresql',
@@ -64,41 +61,39 @@ router.post("/register", (req, res, next) => {
  })
 
 
-
-const SECRET = "twojejmatki"
-
 router.get('/login' , (req, res) => {
    res.sendFile('login.html', { root: __dirname });
 })
 
-
 router.post("/login", (req, res, next) => {
-    database("admins1")
-    .where({mail: req.body.mail})
-    .first()
-    .then(mail => {
-       if(!mail){
-         res.status(401).json({
-             error: "Wrong credentails"
-          })
-       }else{
-          return bcrypt
-          .compare(req.body.password, mail.password)
-          .then(isAuthenticated => {
-             if(!isAuthenticated){
-                res.status(401).json({
-                   error: "Unauthorized User!"
-                })
-             }else{
-                 jwt.sign(mail, SECRET, (error, token) => {
-                 return  res.status(200).json({token})
-                   
-                })
-             }
-          })
-       }
-    })
- })
+   database("admins1")
+   .where({mail: req.body.mail})
+   .first()
+   .then(mail => {
+      if(!mail){
+        res.status(401).json({
+            error: "Wrong credentails"
+         })
+      }else{
+         return bcrypt
+         .compare(req.body.password, mail.password)
+         .then(isAuthenticated => {
+            if(!isAuthenticated){
+               res.status(401).json({
+                  error: "Unauthorized User!"
+               })
+            }else{
+                jwt.sign(mail, SECRET, { expiresIn: '7d' }, (error, token) => {
+                   res.cookie('token', token, { httpOnly: true , sameSite: 'strict' });
+                   return  res.status(200).json({token})
+               
+               })
+
+            }
+         })
+      }
+   })
+})
 
  module.exports = {  router , verifyjwt }
 

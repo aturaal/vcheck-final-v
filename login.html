@@ -1,57 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Panel</title>
-    <script src="login.js"></script>
-</head>
-<body>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login Panel</title>
+        <script src="login.js"></script>
+    </head>
+    <body>
 
-    <form>  
-        <div class="container" method="POST" action="/login">   
-            <label>Email : </label>   
-            <input id="mail" type="text" placeholder="Email" name="Email[mail]" required>  
-            <label>Password : </label>   
-            <input id="password" type="password" placeholder="Password" name="password" required>  
-            <button id="button" type="submit">Login</button>   
-        </div>  
+        <form>  
+            <div class="container" method="POST" action="/login">   
+                <label>Email : </label>   
+                <input id="mail" type="text" placeholder="Email" name="Email[mail]" required>  
+                <label>Password : </label>   
+                <input id="password" type="password" placeholder="Password" name="password" required>  
+                <button id="button" type="submit">Login</button>   
+            </div>  
 
-    </form>    
-    <script>
-const button = document.getElementById('button')
-async function getInfo(event) {
-    event.preventDefault()
-        const mail = document.getElementById('mail').value
-    const password = document.getElementById('password').value
-    fetch('http://localhost:3000/login' , {
+        </form>    
+        <script>
+            const button = document.getElementById('button')
+            async function getInfo(event) {
+                event.preventDefault()
+                const mail = document.getElementById('mail').value
+                const password = document.getElementById('password').value
+                let headers = {
+                    'Content-Type': 'application/json'
+                }
+    
+                fetch('http://localhost:3000/login' , {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        mail,
+                        password,
+                    }),
+                }).then((response) => {
+                    if(response.status === 200) {
+                        window.location = 'http://localhost:3000/'
+                    } else {
+                        alert('Invalid Credentials')
+                    }
+                })
+            }
+        
+            button.addEventListener('click' , (event) => getInfo(event))
+        </script>
+        
 
-        method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                token: localStorage.getItem('token')
-            },
-            body: JSON.stringify({
-                mail,
-                password,
-            }),
-
-    }).then((response) => response.json())
-      .then(({ token }) => {
-        localStorage.setItem('token', token)
-        if(!token) {
-            res.status(403)
-            window.location.href = "http://localhost:3000/login"
-        };
-        window.location = 'http://localhost:3000/'
-})
-
-}
-
-button.addEventListener('click' , (event) => getInfo(event))
-
-    </script>
-
-</body>
-</html>
+    </body>
+    </html>

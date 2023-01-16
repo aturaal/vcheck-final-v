@@ -79,10 +79,7 @@ label.label input[type="file"] {
   }
   
 
-
-
-
-
+  
 #deneme22 {
   top:0;
   bottom:0;
@@ -96,7 +93,14 @@ label.label input[type="file"] {
 }
 
 
-
+.footer {
+  background-color: #f1f1f1;
+  text-align: center;
+  padding: 20px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
 
 
 

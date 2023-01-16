@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const { json } = require('express');
-let results = [];
 const { emitWarning, nextTick } = require('node:process');
 const knex = require('knex');
 const { Pool } = require('pg');
@@ -14,30 +13,14 @@ const controller = require('./controller')
 app.use(controller)
 
 
-
-
 app.use(router)
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const server = require('node:http').createServer(app);
 
 
-const allVoucher = (request, res) => {
-  database
-    .select('created_at', 'updated_at', 'email', 'voucher_Code')
-    .from('vouchers')
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((error) => {
-      res.status(500).send({
-        message: error.message || 'Some error occurred.',
-      });
-    });
-};
 
 
 
 
-app.listen(3000)
-
+app.listen(3000 || process.env.PORT)

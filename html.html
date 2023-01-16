@@ -49,9 +49,6 @@
 
     <script>
 
-
-
-//get jwt from localstorage if doesnt exists redirect to login page
 const form = document.getElementById('uploadForm')
 
 
@@ -82,28 +79,41 @@ const downloadVouchers = async () => {
       })
       .then((resp) => resp.json())
       .then(async (daa) => {
-         await array.push(daa)
-         console.log(array)
+         if(daa.length === 0) {
+
+            alert('empty file')
+         } else {
+             await array.push(daa)
+             console.log(array)
+         }
 
          function saveJSON(array) {
-            console.log(array)
-            const blob = new Blob([JSON.stringify(array, null, 2)], {
-               type: "application/json"
-            });
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "data.json";
-            a.hidden = true;
-            document.body.appendChild(a);
-            a.innerHTML =
-               "someinnerhtml";
-            a.click();
-         }
+   if(array.length === 0) {
+      alert("This file doesn't contain anything");
+   } else {
+      const blob = new Blob([JSON.stringify(array, null, 2)], {
+         type: "application/json"
+      });
+      let a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "data.json";
+      a.hidden = true;
+      document.body.appendChild(a);
+      a.innerHTML = "someinnerhtml";
+      a.click();
+   }
+}
 
          await saveJSON(array)
 
 
+      }).catch(err => {
+         console.log(err.message)
+         if(err.message === "Failed to fetch") {
+            alert('Please write voucher_Code to first row of your code \n And you can paste the voucher codes starting from the 2nd row of the CSV file.')
+         }
       })
+      
 }
 
 const checkVouchers = async (e) => {

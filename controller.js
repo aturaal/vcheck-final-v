@@ -11,6 +11,7 @@ const csvFilePath = 'files/csvfile.csv';
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const database = require('./database');
+const {verifyjwt} = require('./admin-panel/login')
 controller.use(
     bodyParser.json({
       limit: '100MB',
@@ -18,7 +19,7 @@ controller.use(
   );
 
 
-controller.get('/api/v1/results', async (req, res) => {
+controller.get('/api/v1/results', verifyjwt , async (req, res) => {
 
     database('vouchers')
         .select('created_at', 'updated_at', 'email', 'voucher_Code')
@@ -27,7 +28,7 @@ controller.get('/api/v1/results', async (req, res) => {
           res.send(bulkVouchers);
         })
     });
-    controller.get('/api/v1/:voucher_Code' , async (request, res) => {
+    controller.get('/api/v1/:voucher_Code' , verifyjwt , async (request, res) => {
     const { voucher_Code } = request.params;
     data('vouchers')
       .where({ voucher_Code: voucher_Code })
@@ -36,14 +37,14 @@ controller.get('/api/v1/results', async (req, res) => {
       });
   });
   
-  controller.get('/' ,  (req, res) => {
+  controller.get('/' , verifyjwt, (req, res) => {
   console.log(req.body)
   console.log(res.body)
    
     res.sendFile('html.html', { root: __dirname });
   });
   
-  controller.post('/upload', upload.any('files', 10), (request, res) => {
+  controller.post('/upload', verifyjwt , upload.any('files', 10), (request, res) => {
     const files = request.files;
   
     files.map((file, index) => {
