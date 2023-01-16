@@ -9,8 +9,13 @@ const cookieParser = require('cookie-parser')
 router.use(cookieParser())
 const path = require('path')
 const jwt = require('jsonwebtoken');
-const SECRET = "twojejmatki"
+const database = require('/Users/johnkleiner/Desktop/daaaad/database.js');
+const env = require('dotenv')
+env.config();
 
+
+
+const SECRET = process.env.JWT
 
 
 
@@ -19,7 +24,7 @@ const verifyjwt = function(req , res , next) {
      if(req.headers.cookie.split("=")[1]){
         const [,token] = req.headers.cookie.split('=')
         try {
-           const decodedToken = jwt.verify(token, "twojejmatki")
+           const decodedToken = jwt.verify(token, process.env.JWT)
            next();
         } catch (error) {
            res.status(401).json({error: "Unauthorized User!"})
@@ -33,17 +38,6 @@ const verifyjwt = function(req , res , next) {
    
  }
 
-const database = knex({
-    client: 'postgresql',
-    connection: {
-      host: 'localhost',
-      user: 'postgres',
-      password: 'annen12',
-      database: 'postgres',
-      port: '5432',
-    },
-    useNullAsDefault: true,
-  });
 
 
 router.post("/register", (req, res, next) => {
